@@ -1,5 +1,7 @@
 #! /usr/bin/env ruby
 
+require "byebug"
+
 def grid(live_cells)
   live_cells
     .reduce({}) do |acc, cell|
@@ -12,17 +14,13 @@ def grid(live_cells)
 end
 
 def cell_neighbors(cell)
-  x, y = cell
-  [
-    [x - 1, y - 1],
-    [x, y - 1],
-    [x + 1, y - 1],
-    [x - 1, y],
-    [x + 1, y],
-    [x - 1, y + 1],
-    [x, y + 1],
-    [x + 1, y + 1]
-  ]
+  cell_x, cell_y = cell
+  ((cell_x - 1)..(cell_x + 1)).to_a.reduce([]) do |acc, neighbor_x|
+    ((cell_y - 1)..(cell_y + 1)).to_a.each do |neighbor_y|
+      acc << [neighbor_x, neighbor_y] unless [neighbor_x, neighbor_y] == cell
+    end
+    acc
+  end
 end
 
 def underpopulated?(life_state, neighbors)
