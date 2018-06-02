@@ -1,7 +1,5 @@
 #! /usr/bin/env ruby
 
-require "byebug"
-
 def grid(live_cells)
   live_cells
     .reduce({}) do |acc, cell|
@@ -23,16 +21,22 @@ def cell_neighbors(cell)
   end
 end
 
-def underpopulated?(life_state, neighbors)
-  return life_state == 1 && neighbors.count < 2
+# TODO: pass these rules in to revive?/survive?
+def revive?(life_state, live_neighbors)
+  life_state == 0 && live_neighbors >= 3 && live_neighbors <= 3
 end
 
-def overpopulated?(life_state, neighbors)
-  return life_state == 1 && neighbors.count > 3
+def survive?(life_state, live_neighbors)
+  life_state == 1 && live_neighbors >= 2 && live_neighbors <= 3
 end
 
-def revive?(life_state, neighbors)
-  return life_state == 0 && neighbors.count == 3
+def evolve(cell, life_state, grid)
+  neighbors = cell_neighbors(cell)
+    .select { |neighbor| grid.has_key?(neighbor) && grid[neighbor] == 1 }
+    .count
+
+  return 1 if survive?(life_state, neighbors) || revive?(life_state, neighbors)
+  return 0
 end
 
 def advance(live_cells)
@@ -40,13 +44,7 @@ def advance(live_cells)
 
   grid
     .reduce(grid.clone) do |acc, (cell, life_state)|
-      neighbors = cell_neighbors(cell).select { |neighbor| grid.has_key?(neighbor) && grid[neighbor] == 1 }
-      if overpopulated?(life_state, neighbors) || underpopulated?(life_state, neighbors)
-        acc[cell] = 0
-      end
-      if revive?(life_state, neighbors)
-        acc[cell] = 1
-      end
+      acc[cell] = evolve(cell, life_state, grid)
       acc
     end
     .to_a
@@ -96,4 +94,6 @@ def main()
   end
 end
 
-main()
+if __FILE__ == $0
+  main()
+end
