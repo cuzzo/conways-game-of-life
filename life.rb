@@ -12,13 +12,10 @@ def grid(live_cells)
 end
 
 def cell_neighbors(cell)
-  cell_x, cell_y = cell
-  ((cell_x - 1)..(cell_x + 1)).to_a.reduce([]) do |acc, neighbor_x|
-    ((cell_y - 1)..(cell_y + 1)).to_a.each do |neighbor_y|
-      acc << [neighbor_x, neighbor_y] unless [neighbor_x, neighbor_y] == cell
-    end
-    acc
-  end
+  dimensions = cell.map { |coord| ((coord - 1)..(coord + 1)).to_a }
+  dimensions[0]
+    .product(*dimensions.drop(1))
+    .reject { |neighbor_cell| neighbor_cell == cell }
 end
 
 # TODO: pass these rules in to revive?/survive?
