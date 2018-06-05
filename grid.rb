@@ -31,7 +31,7 @@ end
 
 # @return bool
 #   cell's life state
-def evolve(cell, state)
+def evolve(state)
   return true if survive?(state.life, state.neighbors) || revive?(state.life, state.neighbors)
   return false
 end
@@ -43,7 +43,7 @@ def advance(live_cells)
 
   grid
     .reduce({}) do |acc, (cell, state)|
-      acc[cell] = evolve(cell, state)
+      acc[cell] = evolve(state)
       acc
     end
     .to_a
