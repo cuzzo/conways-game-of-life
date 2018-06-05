@@ -8,7 +8,7 @@ describe "Grid" do
     subject { survive?(life_state, live_neighbors) }
 
     context "alive" do
-      let(:life_state) { 1 }
+      let(:life_state) { true }
 
       context "above population maximum" do
         let(:live_neighbors) { maximum_population + 1 }
@@ -47,7 +47,7 @@ describe "Grid" do
     end
 
     context "dead" do
-      let(:life_state) { 0 }
+      let(:life_state) { false }
 
       context "above population maximum" do
         let(:live_neighbors) { maximum_population + 1 }
@@ -93,7 +93,7 @@ describe "Grid" do
     subject { revive?(life_state, live_neighbors) }
 
     context "alive" do
-      let(:life_state) { 1 }
+      let(:life_state) { true }
 
       context "above population maximum" do
         let(:live_neighbors) { maximum_population + 1 }
@@ -132,7 +132,7 @@ describe "Grid" do
     end
 
     context "dead" do
-      let(:life_state) { 0 }
+      let(:life_state) { false }
 
       context "above population maximum" do
         let(:live_neighbors) { maximum_population + 1 }

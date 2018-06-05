@@ -1,15 +1,14 @@
+CellState = Struct.new(:life, :neighbors)
+
 def grid(live_cells)
   live_cells
     .reduce({}) do |acc, cell|
       cell_neighbors(cell).each do |neighbor|
-        acc[neighbor] ||= {}
-        acc[neighbor][:life] ||= false
-        acc[neighbor][:neighbors] ||= 0
-        acc[neighbor][:neighbors] += 1
+        acc[neighbor] ||= CellState.new(false, 0)
+        acc[neighbor].neighbors += 1
       end
-      acc[cell] ||= {}
-      acc[cell][:life] = true
-      acc[cell][:neighbors] ||= 0
+      acc[cell] ||= CellState.new(true, 0)
+      acc[cell].life = true
       acc
     end
 end
@@ -33,7 +32,7 @@ end
 # @return bool
 #   cell's life state
 def evolve(cell, state)
-  return true if survive?(state[:life], state[:neighbors]) || revive?(state[:life], state[:neighbors])
+  return true if survive?(state.life, state.neighbors) || revive?(state.life, state.neighbors)
   return false
 end
 
