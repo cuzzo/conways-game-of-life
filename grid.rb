@@ -2,9 +2,14 @@ def grid(live_cells)
   live_cells
     .reduce({}) do |acc, cell|
       cell_neighbors(cell).each do |neighbor|
-        acc[neighbor] = 0 unless acc.has_key?(neighbor)
+        acc[neighbor] ||= {}
+        acc[neighbor][:life] ||= false
+        acc[neighbor][:neighbors] ||= 0
+        acc[neighbor][:neighbors] += 1
       end
-      acc[cell] = 1
+      acc[cell] ||= {}
+      acc[cell][:life] = true
+      acc[cell][:neighbors] ||= 0
       acc
     end
 end
@@ -18,22 +23,18 @@ end
 
 # TODO: pass these rules in to revive?/survive?
 def revive?(life_state, live_neighbors)
-  life_state == 0 && live_neighbors >= 3 && live_neighbors <= 3
+  life_state == false && live_neighbors >= 3 && live_neighbors <= 3
 end
 
 def survive?(life_state, live_neighbors)
-  life_state == 1 && live_neighbors >= 2 && live_neighbors <= 3
+  life_state == true && live_neighbors >= 2 && live_neighbors <= 3
 end
 
-# @return int
-#   cell's state [life_state]
-def evolve(cell, life_state, grid)
-  neighbors = cell_neighbors(cell)
-    .select { |neighbor| grid.has_key?(neighbor) && grid[neighbor] == 1 }
-    .count
-
-  return 1 if survive?(life_state, neighbors) || revive?(life_state, neighbors)
-  return 0
+# @return bool
+#   cell's life state
+def evolve(cell, state)
+  return true if survive?(state[:life], state[:neighbors]) || revive?(state[:life], state[:neighbors])
+  return false
 end
 
 # @return array
@@ -42,11 +43,11 @@ def advance(live_cells)
   grid = grid(live_cells)
 
   grid
-    .reduce(grid.clone) do |acc, (cell, life_state)|
-      acc[cell] = evolve(cell, life_state, grid)
+    .reduce({}) do |acc, (cell, state)|
+      acc[cell] = evolve(cell, state)
       acc
     end
     .to_a
-    .select { |_cell, life_state| life_state == 1 }
+    .select { |_cell, life_state| life_state }
     .map(&:first)
 end
