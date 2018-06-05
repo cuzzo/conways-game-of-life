@@ -1,15 +1,34 @@
+class CellState
+  attr_accessor :alive
+
+  def initialize(alive)
+    @alive = alive
+    @neighbors = 0
+  end
+
+  def touch()
+    @neighbors += 1
+  end
+
+  # TODO: pass these rules in to revive?/survive?
+  def revive?
+    @alive == false && @neighbors >= 3 && @neighbors <= 3
+  end
+
+  def survive?
+    @alive == true && @neighbors >= 2 && @neighbors <= 3
+  end
+end
+
 def grid(live_cells)
   live_cells
     .reduce({}) do |acc, cell|
       cell_neighbors(cell).each do |neighbor|
-        acc[neighbor] ||= {}
-        acc[neighbor][:life] ||= false
-        acc[neighbor][:neighbors] ||= 0
-        acc[neighbor][:neighbors] += 1
+        acc[neighbor] ||= CellState.new(false)
+        acc[neighbor].touch()
       end
-      acc[cell] ||= {}
-      acc[cell][:life] = true
-      acc[cell][:neighbors] ||= 0
+      acc[cell] ||= CellState.new(true)
+      acc[cell].alive = true
       acc
     end
 end
@@ -21,19 +40,10 @@ def cell_neighbors(cell)
     .reject { |neighbor_cell| neighbor_cell == cell }
 end
 
-# TODO: pass these rules in to revive?/survive?
-def revive?(life_state, live_neighbors)
-  life_state == false && live_neighbors >= 3 && live_neighbors <= 3
-end
-
-def survive?(life_state, live_neighbors)
-  life_state == true && live_neighbors >= 2 && live_neighbors <= 3
-end
-
 # @return bool
 #   cell's life state
 def evolve(cell, state)
-  return true if survive?(state[:life], state[:neighbors]) || revive?(state[:life], state[:neighbors])
+  return true if state.survive? || state.revive?
   return false
 end
 
