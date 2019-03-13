@@ -15,9 +15,7 @@ end
 
 def cell_neighbors(cell)
   dimensions = cell.map { |coord| ((coord - 1)..(coord + 1)).to_a }
-  dimensions[0]
-    .product(*dimensions.drop(1))
-    .reject { |neighbor_cell| neighbor_cell == cell }
+  dimensions[0].product(*dimensions.drop(1)) - [cell]
 end
 
 # TODO: pass these rules in to revive?/survive?
